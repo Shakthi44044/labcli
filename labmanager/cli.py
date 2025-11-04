@@ -13,6 +13,13 @@ def get_programs_dir() -> Path:
     This is calculated relative to this file's location so the CLI works when
     run from the checkout (not necessarily when installed as a package).
     """
+    # Prefer a `program/` folder in the current working directory so users can
+    # run `labcli` from a project checkout without installing or republishing
+    # the package. If not found, fall back to the package-relative path.
+    cwd_candidate = Path.cwd() / "program"
+    if cwd_candidate.exists() and cwd_candidate.is_dir():
+        return cwd_candidate
+
     # package_dir -> parent is repository root
     package_dir = Path(__file__).resolve().parent
     repo_root = package_dir.parent
